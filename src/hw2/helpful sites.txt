@@ -1,0 +1,16 @@
+Comparing two strings: https://www.programmingsimplified.com/c-program-compare-two-strings
+Lots of good shit: https://www.geeksforgeeks.org/input-output-system-calls-c-create-open-close-read-write/
+
+Stat: https://techoverflow.net/2013/08/21/how-to-get-filesize-using-stat-in-cc/
+        codewiki.wikidot.com/c:system-calls:stat
+
+Open: https://www.ibm.com/developerworks/community/blogs/58e72888-6340-46ac-b488-d31aa4058e9c/entry/understanding_linux_open_system_call?lang=en
+          http://man7.org/linux/man-pages/man2/open.2.html
+
+
+
+read from fd 0 - stdin
+write to stdout - fd 1
+write to stderr - fd 2 (errors)
+
+
