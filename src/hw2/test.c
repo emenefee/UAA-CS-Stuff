@@ -18,25 +18,26 @@ void readFile(char *buffer, int size, int fd)
   //TODO: Some error handling
 }
 
-int tailSearch2(char *buffer, int linesToPrint, int size)
+int tailSearch2(char *buffer, int linesToPrint, int sizeOfFile)
 {
   int newLines = 0, byteAddr = 0;
   char *val = "\n";
-  char tempBuff;
+  char currChar;
 
-  for(int i = size; i >= 0; i--)
+  for(int i = sizeOfFile; i >= 0; i--)
   {
-    tempBuff = buffer[i];
-    if((newLines < (linesToPrint + 1)) && (tempBuff == *val))
+    currChar = buffer[i];
+
+    if((newLines < (linesToPrint + 1)) && (currChar == *val))
     {
       newLines++;
     }
-    else if(newLines == (linesToPrint + 1))
+    else if((linesToPrint + 1) > newLines)
     {
-      byteAddr = (int) buffer[i];
-      return byteAddr;
+      byteAddr = i;
     }
   }
+  return byteAddr;
 }
 
 void printTail(char *buffer, int linesToPrint, int sizeOfFile)
