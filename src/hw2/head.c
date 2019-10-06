@@ -168,8 +168,6 @@ void mainHelper(int startByte, int endByte, int fd)
   printStuff("\n");
 }
 
-// TODO: Document these OR GET THE FUCK RID OF THEM
-
 bool strCompare(char argStr[], char checkStr[])
 {
 	int i = 0;
