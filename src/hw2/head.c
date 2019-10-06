@@ -107,7 +107,7 @@ int openFile(char fileName[])
 	fd = open(fileName, O_RDONLY);
 	if(fd == -1)
 	{
-		perror("c1");
+		perror("File Error: ");
 		exit(1);
 	}
 
