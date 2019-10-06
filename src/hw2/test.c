@@ -27,7 +27,7 @@ int tailSearch2(char *buffer, int linesToPrint, int size)
   for(int i = size; i >= 0; i--)
   {
     tempBuff = buffer[i];
-    if((newLines < (linesToPrint + 1)) && (tempBuff == val))
+    if((newLines < (linesToPrint + 1)) && (tempBuff == *val))
     {
       newLines++;
     }
@@ -42,20 +42,13 @@ int tailSearch2(char *buffer, int linesToPrint, int size)
 void printTail(char *buffer, int linesToPrint, int sizeOfFile)
 {
   int startAddr = 0;
-  startAddr = tailSearch2(buffer, linesToPrint, size);
+  startAddr = tailSearch2(buffer, linesToPrint, sizeOfFile);
 
   for(int i = startAddr; i <= sizeOfFile; i++)
   {
-
-    write(1, buffer[i], 1);
+    write(1, &buffer[i], 1);
   }
 }
-
-// find x amount of lines to print
-// get that last byte address (???)
-// size - byteAddress
-// allocate new buffer ^
-// print ^
 
 int main()
 {
