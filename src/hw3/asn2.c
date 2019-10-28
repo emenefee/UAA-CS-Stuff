@@ -226,7 +226,7 @@ int test(int argc, char *argv[])
 
     printf("The prev to usr3 is %p\n", theprev);
 
-    void *testptr = usr2->start;
+    void *testptr = usr1->start;
 
     free(testptr);
 
