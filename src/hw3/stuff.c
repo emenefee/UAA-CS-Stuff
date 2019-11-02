@@ -7,15 +7,15 @@
 // NOTE:::::::: I have kind of added/changed stuff to the struct
 // https://www.learn-c.org/en/Linked_lists
 
-typedef struct node{
-    void *mem_ptr; // the address of the whole memory block used to uniquly identify the mmap it belongs to.        -- All will be the same for all
-    size_t block_size; // size of the large block allocation                                                        -- Mater Header
-    size_t size; // Size of the block given to the user minus the Header 	                                        -- User Memory
-    void *start; // Start of the block of usable memory minus the header                                            -- User Memory
-    struct node* next; // pointer to the next block of free memory                                                         -- Free Memory
+typedef struct{
+    void *head_ptr; // the address of the whole memory block used to uniquly identify the mmap it belongs to.        -- All will be the same for all
+    size_t head_size; // size of the large block allocation                                                        -- Mater Header
+    size_t node_size; // Size of the block given to the user minus the Header 	                                        -- User Memory
+    void *node_start; // Start of the block of usable memory minus the header                                            -- User Memory
+    header_t* next; // pointer to the next block of free memory                                                     -- Free Memory
 } header_t;
 
-static node * free_mem = NULL;
+header_t* free_mem = NULL;
 
 void* map_mem(size_t size)
 {
@@ -68,4 +68,45 @@ void* malloc(size_t size)
 			// Some magic shit happens here man idek
 		}
 	}
+}
+
+
+void free(void* ptr)
+{
+	void* temp_ptr = ptr - sizeof(header_t);
+	temp_ptr->node_size = size_of_temp;
+
+}
+
+void add_to_ll(header_t insert)
+{
+	if(free_mem == NULL)
+	{
+		free_mem = insert;
+	}
+	else
+	{
+		header_t* curr_head = free_mem;
+		while(curr_head != NULL)
+		{
+			if(curr_head->node_start > insert->node_start)
+			{
+				
+			}
+			else if(curr_head->node_start < insert->node_start)
+			{
+
+			}
+		}
+	}
+}
+
+void rmv_from_ll(header_t rmv)
+{
+
+}
+
+void coallace()
+{
+	
 }
