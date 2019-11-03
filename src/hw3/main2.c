@@ -1,7 +1,12 @@
+//     Matt Hakin & Elysha Menefee    //
+//          Date: Nov 3, 2019         //
+// HW3: malloc, calloc, realloc, free //
+
 #include <stddef.h>
 #include <sys/mman.h>
+
 #define HEADER_SIZE sizeof(header_t)
-#define DEFAULT_MEM_SIZE ((size_t) (16777216))
+#define DEFAULT_MEM_SIZE ((size_t) (5242880)) //5mb
 
 typedef struct {
     void *mmap_block;
@@ -13,6 +18,7 @@ typedef struct {
 
 // Pointer to hold the blocks of free memory
 header_t *free_mem = NULL;
+
 static void* map_mem(size_t size);
 static void add_to_ll(void* add, size_t size);
 static void rmv_from_ll(header_t* rmv, size_t size);
@@ -21,10 +27,10 @@ void __free_impl(void *);
 static void coallace();
 static void* size_helper(size_t size);
 static size_t sizemem(size_t original, size_t requested);
+
 int main(int argc, char* argv[])
 {
     void * ptr = __malloc_impl(1000);
-    __free_impl(ptr);
     void * ptr2 = __malloc_impl(2000);
     void * ptr3 = __malloc_impl(4000);
     void * ptr4 = __malloc_impl(17777216);
@@ -41,10 +47,15 @@ int main(int argc, char* argv[])
       looper = looper->node_next;
     }
 
-    //__free_impl(ptr);
+    __free_impl(ptr);
     __free_impl(ptr2);
     __free_impl(ptr3);
     __free_impl(ptr4);
+    __free_impl(ptr5);
+    __free_impl(ptr6);
+    __free_impl(ptr7);
+    __free_impl(ptr8);
+    __free_impl(ptr9);
     
     looper = free_mem;
 
@@ -56,9 +67,7 @@ int main(int argc, char* argv[])
 }
 
 
-
 /* Predefined helper functions */
-
 static void *__memset(void *s, int c, size_t n) {
   unsigned char *p;
   size_t i;
@@ -155,13 +164,6 @@ static int __try_size_t_multiply(size_t *c, size_t a, size_t b) {
    list probably needs to be kept ordered by ascending addresses.
 
 */
-
-
-//     Matt Hakin & Elysha Menefee    //
-//          Date: Nov 3, 2019         //
-// HW3: malloc, calloc, realloc, free //
-
-
 
 void *__malloc_impl(size_t size) {
   int found_mem = 0; // didn't like the bool
@@ -261,20 +263,7 @@ void *__realloc_impl(void *ptr, size_t size) {
 void __free_impl(void *ptr) {
   header_t* ptr_head = (ptr - HEADER_SIZE); // Because user pointer doesn't include the header.
   add_to_ll(((void*)ptr_head), ptr_head->node_size);
-  coallace();
-
-  // header_t* curr_node = free_mem;
-  // while(curr_node != NULL)
-  // {
-  //   if(curr_node->mmap_size == curr_node->node_size)
-  //   {
-  //     rmv_from_ll(curr_node, curr_node->node_size);
-  //     //munmap(curr_node, curr_node->node_size);
-  //     break;
-  //   }
-
-  //   curr_node = curr_node->node_next;
-  // }
+  //coallace();
 }
 
 /* End of the actual malloc/calloc/realloc/free functions */
@@ -293,6 +282,8 @@ static void* map_mem(size_t size)
 // Note: Dont care what mmap the remove comes from.
 static void rmv_from_ll(header_t* rmv, size_t size)
 {
+  //size_t size = rmv->node_size;
+
   header_t* curr_mem = free_mem; // Start at the begining
   header_t* prev = NULL;
 
@@ -309,14 +300,14 @@ static void rmv_from_ll(header_t* rmv, size_t size)
   {
     if(curr_mem == free_mem && prev == NULL)
     {
-      header_t* new_ptr = (header_t*)((void*)rmv + size + HEADER_SIZE); // Giving new_ptr the address
-      new_ptr->mmap_block = rmv->mmap_block;
-      new_ptr->mmap_size = rmv->mmap_size;
-      new_ptr->node_size = (rmv->mmap_size - size);
-      // (HEADER_SIZE*2) is because the intial size does not account for a header on the userblock
-      new_ptr->node_start = ((void*)rmv + size + HEADER_SIZE);
-      new_ptr->node_next = rmv->node_next;
-      free_mem = new_ptr;//->node_start;
+      free_mem = NULL;
+      // header_t* new_ptr = (header_t*)((void*)rmv + size + HEADER_SIZE);
+      // size_t new_size = (size_t)(rmv->mmap_size - size);
+
+      // if((curr_mem->mmap_size - new_size + HEADER_SIZE) <= curr_mem->mmap_size)
+      // {
+      //   add_to_ll(new_ptr, new_size);
+      // }
     }
     else
     {
@@ -327,11 +318,10 @@ static void rmv_from_ll(header_t* rmv, size_t size)
   {
     prev->node_next = curr_mem->node_next;
   }
-  curr_mem->node_size = size;
-  curr_mem->node_start = rmv;
 
   curr_mem->node_next = NULL;
   rmv->node_next = NULL;
+  //coallace();
 }
 
 // Adding a free block to the ll of free blocks
@@ -346,14 +336,12 @@ static void add_to_ll(void* add, size_t size)
 
   if(free_mem == NULL) // If the free_mem LL is empty
   {
-    //header_t* first_header = (header_t*)add;
-    block_to_add->mmap_block = add;
-    block_to_add->mmap_size = size;
-    block_to_add->node_size = size;
-    block_to_add->node_start = (void*)(add);// + HEADER_SIZE);
-    block_to_add->node_next = NULL;
-
-    free_mem = block_to_add;
+    header_t* first_header = (header_t*)add;
+    first_header->mmap_block = add;
+    first_header->mmap_size = size;
+    first_header->node_size = size;
+    first_header->node_start = (void*)(add);// + HEADER_SIZE);
+    free_mem = first_header;
   }
   else
   {
@@ -373,21 +361,13 @@ static void add_to_ll(void* add, size_t size)
       }
       // If there is only one node in the LL & the address of the new block is before the old block
       // Adding a whole new mmap to the front of the free_mem list
-      else if (curr_block->node_next == NULL && (curr_block->node_start > block_to_add->node_start))
+      else if (curr_block->node_next == NULL && curr_block->node_start > block_to_add->node_start)
       {
+        block_to_add->mmap_size = size;
+        block_to_add->mmap_block = add;
         block_to_add->node_size = size;
         block_to_add->node_start = add;
         block_to_add->node_next = curr_block;
-        if(curr_block->mmap_block == block_to_add->mmap_block)
-        {
-          block_to_add->mmap_size = curr_block->mmap_size;
-          block_to_add->mmap_block = curr_block->mmap_block;
-        }
-        else
-        {
-          block_to_add->mmap_block = add; 
-          block_to_add->mmap_size = size;
-        }
         free_mem = block_to_add;
         break;
       }
@@ -395,6 +375,7 @@ static void add_to_ll(void* add, size_t size)
       curr_block = next_block;
       next_block = curr_block->node_next;
     }
+    //coallace();
   }
 }
 
@@ -436,8 +417,8 @@ void loopthrough()
 // Smooshing together blocks that need to be smushed
 static void coallace()
 {
-  header_t* curr = free_mem;
-  header_t* next = curr->node_next;
+  /* header_t* curr = free_mem;
+  header_t* next = curr->next;
 
   size_t curr_end, next_start;
   void* curr_block;
@@ -445,29 +426,28 @@ static void coallace()
 
   while(curr != NULL)
   {
-    if(next == NULL)
-      break;
     // End of current block -- CONFUSING AF
-    curr_end = (size_t)(curr->node_start + HEADER_SIZE + curr->node_size);
-    // Start of previous block = next->node_start
+    curr_end = curr_block + curr_block->size;
+    // Start of previous block
+    //next_start = (size_t)(next->node_size - HEADER_SIZE);
 
     // mmap curr & next belong to
     curr_block = curr->mmap_block;
     next_block = next->mmap_block;
 
     // If the blocks are right next to eachother & they are in the same mmap
-    if((curr_end == (size_t)(next->node_start)) && (curr_block == next_block))
+    if((curr_end == next_block) && (curr_block_size == next_block_size))
     {
-      curr->node_size = (size_t)(curr->node_size + next->node_size);
-      curr->node_next = next->node_next;
-      break;
+      curr->node_size = curr->node_size + (size_t)(next->nodesize); //Size of current node = current size + next size + 
+                                                                                    // size of header (from next)
+      curr->next = next->next;
     }
     else // increment curr & next
     {
       curr = next;
-      next = curr->node_next;
+      next = curr->next;
     }
-  }
+  } */
 }
 
 // Helps figure out if the size needs to be default or customized.
