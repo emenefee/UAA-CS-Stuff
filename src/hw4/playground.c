@@ -12,7 +12,7 @@
 //Not sure what the return type is actually going to be.
 int verify_path(char* path, fsobj *curr, struct stat *stbuf)
 {
-	int count;
+	int count = 0;
 	if(path[0] == '/') //If the first thing encountered is a '/'
 	{
 		/* Look through the path until the next slash */
@@ -26,22 +26,19 @@ int verify_path(char* path, fsobj *curr, struct stat *stbuf)
 		a[count-1] = '\0'; // Null terminate the array
 		char* ah = a; // char* pointing to starting address of a
 		
-		int j; // use to populate a & ah = a to shove into the recusive step
-		for(j = 0; path[j+1] != '/'; j++)
+		for(int j = 0; path[j+1] != '/'; j++)
 		{
 			a[j] = (char)path[j+1];
 		}
 		ah = a;
 
-		if(cmp_to_ll(ah, curr))
+		fsobj *tmp = cmp_to_ll(ah, curr);
+		if(tmp != curr)
 		{
-			for(int i = 0; path[count] != '\0'; i++)
-			{
-				count += 1;
-				a[0] = 
-			}
+			verify_path(&path[count], tmp, struct stat *stbuf);
 		}
-		return 0;
+		else
+			return 0;
 	}
 	else if(path[0] == '\0') //If you're at the end of the path.. You've probably found all the things
 	{
@@ -49,29 +46,28 @@ int verify_path(char* path, fsobj *curr, struct stat *stbuf)
 	}
 	else // If the first thing encountered isn't a /
 	{
-		/*TODO: check root directory*/
-		//else
-		printf("%d\n", -1);
 		return 0;
 	}
 }
 
-int cmp_to_ll(char* check, fsobj *curr)
+//Should return whatever the fuck start or next is.... long int? why?
+fsobj *cmp_to_ll(char* check, fsobj *curr, struct stat *stbuff)
 {
-	/* TODO: Traverse ll to find check? */ 
-	while(ll != NULL)
+	fsobj *curr_obj = curr;
+	
+	char* curr_name;
+	while(curr_obj != NULL)
 	{
-
-	}
-	for(int i=0; ll == NULL; i++)
-	{
-		if(strcmp(a, ll) == 0)
+		curr_name = curr_obj->name;
+		if(curr_name == check)
 		{
-			return 1;
+			return curr_obj->start_obj;
 		}
 		else
-			return 0;
+			curr_obj = curr_obj->next_obj;
 	}
+	if(curr_obj == NULL)
+		return curr_obj;
 }
 
 //Said playground
