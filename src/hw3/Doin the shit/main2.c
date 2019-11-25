@@ -157,11 +157,6 @@ static int __try_size_t_multiply(size_t *c, size_t a, size_t b) {
 */
 
 
-//     Matt Hakin & Elysha Menefee    //
-//          Date: Nov 3, 2019         //
-// HW3: malloc, calloc, realloc, free //
-
-
 
 void *__malloc_impl(size_t size) {
   int found_mem = 0; // didn't like the bool
