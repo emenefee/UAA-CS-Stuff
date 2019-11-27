@@ -10,44 +10,22 @@
 #include <string.h>
 
 //Not sure what the return type is actually going to be.
-int verify_path(char* path, fsobj *fs, struct stat *stbuf)
+int verify_path(char* path, fsobj *fs)
 {
 	if(path[0] == '/') //If the first thing encountered is a '/'
 	{
-		// /* Look through the path until the next slash */
-		// // *** i is initialized to 1 to avoid the leading slash
-		// for(int i = 1; path[i] != '/'; i++)
-		// {
-		// 	count++; //This is to figure out the array length
-		// }
-
-		// char a[count]; // Arbitrary size char array
-		// a[count-1] = '\0'; // Null terminate the array
-		// char* ah = a; // char* pointing to starting address of a
-		
-		// for(int j = 0; path[j+1] != '/'; j++)
-		// {
-		// 	a[j] = (char)path[j+1];
-		// }
-		// ah = a;
-
-		// fsobj *tmp = cmp_to_ll(ah, curr);
-		// if(tmp != curr)
-		// {
-		// 	verify_path(&path[count], tmp, struct stat *stbuf);
-		// }
-		// else
-		// 	return 0;
 		char tmp[255];
 		char *moreTemp;
 
-		moreTemp = memchr(&path[1], '/', 255-1);
-		if(moreTemp != NULL)
+		moreTemp = get_next_path(&path);
+
+		if(moreTemp != path)
 		{
-			memset(tmp, 0, 255);
-			memcpy(tmp, &path[1], strlen(path)-strlen(moreTemp-1));
 			//tmp holds the string you need to compare
 			//moreTemp holds the rest of the path
+			memset(tmp, 0, 255);
+			memcpy(tmp, &path[1], strlen(path)-strlen(moreTemp-1));
+
 			fsobj *curr_obj = fs;
 			while(1)
 			{
@@ -60,7 +38,7 @@ int verify_path(char* path, fsobj *fs, struct stat *stbuf)
 						return 1;
 					}
 					curr_obj = curr_obj->start_obj;
-					verify_path(moreTemp, &curr_obj, &stbuf);
+					verify_path(moreTemp, &curr_obj);
 				}
 				else if(curr_obj->next_obj != 0)
 				{
@@ -81,6 +59,26 @@ int verify_path(char* path, fsobj *fs, struct stat *stbuf)
 	{
 		return 0;
 	}
+}
+
+char *get_next_path(char *curr_path)
+{
+	if(curr_path[0] == '/')
+	{
+		char *new_path;
+		new_path = memchr(&curr_path[1], '/', 254);
+		if(new_path != NULL)
+		{
+			printf("%s\n", new_path);
+			return new_path;
+		}
+		else
+		{
+			return curr_path;
+		}
+	}
+	else
+		return NULL;
 }
 
 //Said playground
