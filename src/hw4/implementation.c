@@ -234,22 +234,6 @@
 
 /* YOUR HELPER FUNCTIONS GO HERE */
 
-typedef struct {
-        long int start_obj;     // if file, offset of current object to start of file || if dir,
-                                //    points to begining of ll
-        long int next_obj;      // ^
-        char name[255];         // Name of file/dir
-        uint8_t magic;
-        uid_t st_uid;           // User ID of owner     - uint
-        gid_t st_gid;           // Group ID of owner    - uint
-        mode_t st_mode;         // File (S_IFREG) || Directory (S_IFDIR)
-        nlink_t st_nlink;       // (as many as there are subdirectories (not files) for directories(including . and ..),1 for files)
-        off_t st_size;          // (supported only for files, where it is the real file size)
-
-        struct timespec st_atim; // Last access time
-        struct timespec st_mtim; // Last modification time
-} fsobj;
-
 /* End of helper functions */
 
 /* Implements an emulation of the stat system call on the filesystem 
@@ -281,10 +265,8 @@ typedef struct {
 int __myfs_getattr_implem(void *fsptr, size_t fssize, int *errnoptr,
                           uid_t uid, gid_t gid,
                           const char *path, struct stat *stbuf) {
-  if 1
-    return 0
-  else
-    return -1;
+  /* STUB */
+  return -1;
 }
 
 /* Implements an emulation of the readdir system call on the filesystem 

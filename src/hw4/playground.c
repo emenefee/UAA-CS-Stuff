@@ -81,6 +81,81 @@ char *get_next_path(char *curr_path)
 		return NULL;
 }
 
+
+/* Write a function (f) that needs to change some integer to
+42, and a calling function (cf): we are in a calling function
+the calling function calls f
+if f wants to see that change for its own var, int a;
+In order to see a change done to a certain argument, pass a ptr.
+some function needs to store a list of strings in mem. a str in c
+is the null terminated array of chars
+an array is a ptr. 
+one string = char *
+need a list of arrays: char**
+inside a function that needs to communicate that data structure
+to the outside world, the calling function (char***)
+calling function does: 
+char** array_of_strs
+somewhere calls myfs read_dir_implem(char ***namesptr)
+char *** arry_of_strs = answer;
+SET UP AN ARRY OF STRS
+size_t n, i, l;
+n = 42 //the number of strings
+array_of_strs = (char**) calloc(n, sizeof(char *));
+.. Some kind of check to make sure it works
+for (i = 0; i < n; i++)
+{
+	array_of_str[i] = (char*) calloc(L + 1, sizeof(char)) 
+	strcopy(array_of_strs[i], ??? max_len L);
+	array of strs[i][l] = '\0';
+	&namesptr = array_of_strs;
+}*/
+int get_dir_list(void *fsptr, char* path, char ***namesptr, int *errnoptr)
+{
+	char ** array_of_strs;
+	size_t n, l;
+	fsobj *curr_obj = fsptr->start_obj;
+
+	// get a count of how many things are in the directory
+	while(curr_obj != NULL)
+	{
+		n++;
+		curr_obj = curr_obj->next_obj;
+	}
+
+	//reset curr because you need to know the length of each str
+	curr_obj = fsptr->start_obj;
+
+	array_of_strs = (char **) calloc(n, sizeof(char *));
+
+	if(array_of_strs != NULL) //if calloc was successful
+	{
+		for(int i=0; i < n; i++)
+		{
+			l = sizeof(curr_obj->name);
+			array_of_strs[i] = (char *) calloc(l + 1, sizeof(char));
+			if(array_of_strs[i] != NULL)
+			{
+				strcopy(array_of_strs[i], ???);
+				array_of_strs[i][l] = '\0';
+				curr_obj = curr_obj->next_obj;
+			}
+			else
+			{
+				&errnoptr = ENOMEM
+				return -1;
+			}
+		}
+		&namesptr = array_of_strs;
+		return 0;
+	}
+	else //return errno
+	{
+		&errnoptr = ENOMEM;
+		return -1;
+	}
+}
+
 //Said playground
 int main()
 {
